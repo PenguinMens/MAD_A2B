@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "304956137638",
+    "project_id": "mada2b-ad095",
+    "storage_bucket": "mada2b-ad095.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:304956137638:android:da15b41fa6a57eb480d467",
+        "android_client_info": {
+          "package_name": "com.example.mad_a2b"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAlkOJ_rJ6kZLrrwDPNmvomHElbo-vqCGw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
