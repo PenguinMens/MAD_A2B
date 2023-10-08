@@ -29,6 +29,9 @@ import okhttp3.Response;
 
 import java.time.Instant;
 import java.time.LocalDate; // import the LocalDate class
+import java.time.LocalDateTime;
+import java.util.Random;
+
 public class ImageUploadThread extends Thread {
     private static final String TAG = "ImageUploadTask";
     private final String endpointUrl;
@@ -55,6 +58,17 @@ public class ImageUploadThread extends Thread {
         if(MainActivity.USEGOOGLE){
             storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference();
+            // need to update the datenamer refrence
+            // name is currently the retreival but we want to upload with new date
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                this.name = LocalDateTime.now().toString();
+            }
+            else
+            {
+                Random rand = new Random();
+                int int_random = rand.nextInt(999999999);
+                this.name = Integer.toString(int_random);
+            }
             StorageReference mountainsRef = storageRef.child(name + ".jpg");
             UploadTask uploadTask = mountainsRef.putBytes(bitmapBytes);
             uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -70,19 +84,16 @@ public class ImageUploadThread extends Thread {
                     // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                     // ...
                     System.out.println(taskSnapshot.getMetadata().toString());
-                    Toast.makeText(uiActivity, "Response code: " + taskSnapshot.getMetadata(), Toast.LENGTH_SHORT).show();
+
+                    Toast.makeText(uiActivity, "Uploaded to Firebase!" , Toast.LENGTH_LONG).show();
                 }
             });
         }
         else{
             OkHttpClient client = new OkHttpClient();
-
             MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-
-
             RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), bitmapBytes);
             builder.addFormDataPart("file", "images.jpg"  , requestBody);
-
 
             Request request = new Request.Builder()
                     .url(endpointUrl)
@@ -106,7 +117,7 @@ public class ImageUploadThread extends Thread {
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
-                    // Handle the response
+                    // Handle the responses
                     uiActivity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

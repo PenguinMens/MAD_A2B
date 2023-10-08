@@ -22,14 +22,18 @@ public class ImageRetrievalThread extends Thread {
     private SearchResponseViewModel sViewModel;
     private ImageViewModel imageViewModel;
     private ErrorViewModel errorViewModel;
+    private EndpointViewModel endpointViewModel;
     private Activity uiActivity;
 
-    public ImageRetrievalThread(Activity uiActivity, SearchResponseViewModel viewModel, ImageViewModel imageViewModel, ErrorViewModel errorViewModel) {
+    public ImageRetrievalThread(Activity uiActivity, SearchResponseViewModel viewModel,
+                                ImageViewModel imageViewModel, ErrorViewModel errorViewModel,
+                                EndpointViewModel endpointViewModel){
         remoteUtilities = RemoteUtilities.getInstance(uiActivity);
         this.sViewModel = viewModel;
         this.imageViewModel = imageViewModel;
         this.errorViewModel = errorViewModel;
         this.uiActivity=uiActivity;
+        this.endpointViewModel = endpointViewModel;
     }
     public void run(){
         ArrayList<String> endpoints = getEndpoints(sViewModel.getResponse());
@@ -43,7 +47,9 @@ public class ImageRetrievalThread extends Thread {
             });
         }
         else {
+
             ArrayList<Picture> image = new ArrayList<>();
+            endpointViewModel.setResponses(endpoints);
             for (String endpoint : endpoints) {
                 System.out.println(endpoint);
                 Bitmap bitmap = getImageFromUrl(endpoint);

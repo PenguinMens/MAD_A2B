@@ -66,7 +66,6 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ImagesView
     }
     public void setNumColumns(int numColumns,ArrayList<Picture> newImages) {
         this.numColumns = numColumns;
-        System.out.println("does this run");
         images.clear();
         images.addAll(newImages);
         this.notifyDataSetChanged(); // Notify the adapter that the data has changed

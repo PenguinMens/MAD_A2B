@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     ImageViewModel imageViewModel;
     ErrorViewModel errorViewModel;
     UploadImageViewModel uploadImageViewModel;
+    EndpointViewModel endpointViewModel;
     Button loadImage;
     Button columnType;
     TextView title;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     GridLayoutManager layoutManager;
     int columnLength = 1;
     ImagesAdapter adapter;
+    Toast toastMessage;
     public static boolean USEGOOGLE = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         imageViewModel = new ViewModelProvider(this, (ViewModelProvider.Factory) new ViewModelProvider.NewInstanceFactory()).get(ImageViewModel.class);
         errorViewModel = new ViewModelProvider(this, (ViewModelProvider.Factory) new ViewModelProvider.NewInstanceFactory()).get(ErrorViewModel.class);
         uploadImageViewModel = new ViewModelProvider(this, (ViewModelProvider.Factory) new ViewModelProvider.NewInstanceFactory()).get(UploadImageViewModel.class);
+        endpointViewModel = new ViewModelProvider(this, (ViewModelProvider.Factory) new ViewModelProvider.NewInstanceFactory()).get(EndpointViewModel.class);
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         requestQueue = Volley.newRequestQueue(this);
         layoutManager = new GridLayoutManager(this, columnLength);
@@ -149,9 +152,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChanged(String s) {
                 progressBar.setVisibility(View.INVISIBLE);
-                Toast.makeText(MainActivity.this, "Search Complete",Toast.LENGTH_LONG).show();
+                showBread("Search Complete");
                 System.out.println(sViewModel.getResponse());
-                ImageRetrievalThread imageRetrievalThread = new ImageRetrievalThread(MainActivity.this, sViewModel, imageViewModel, errorViewModel);
+                ImageRetrievalThread imageRetrievalThread = new ImageRetrievalThread(MainActivity.this,
+                        sViewModel, imageViewModel, errorViewModel, endpointViewModel);
                 progressBar.setVisibility(View.VISIBLE);
                 imageRetrievalThread.start();
 
@@ -164,7 +168,11 @@ public class MainActivity extends AppCompatActivity {
                 if (bitmaps != null && !bitmaps.isEmpty()) {
                     progressBar.setVisibility(View.INVISIBLE);
                     adapter.setImages(bitmaps);
+                    int length = endpointViewModel.getResponses().size();
+                    int amount = bitmaps.size();
+                    showBread(String.format("Rending %d/%d",amount, length));
                 }
+
             }
         });
         errorViewModel.errorCode.observe(this, new Observer<Integer>() {
@@ -179,13 +187,20 @@ public class MainActivity extends AppCompatActivity {
             public void onChanged(Picture bitmap) {
                 if(bitmap != null)
                 {
+                    showBread("uploading image to firebase");
                     ImageUploadThread imageUploadThread = new ImageUploadThread(MainActivity.this, bitmap);
-
                     imageUploadThread.start();
                 }
             }
         });
     }
 
-
+    public void showBread(String message){
+        if(toastMessage!= null)
+        {
+            toastMessage.cancel();
+        }
+        toastMessage = Toast.makeText(MainActivity.this, message,Toast.LENGTH_LONG);
+        toastMessage.show();
+    }
 }
